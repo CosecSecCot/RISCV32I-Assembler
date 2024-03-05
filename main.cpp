@@ -1,6 +1,12 @@
 #include <fstream>
 #include <iostream>
+#include <regex>
 using namespace std;
+
+// https://stackoverflow.com/a/58773060
+string trim(string str) {
+    return regex_replace(str, regex("(^[ \n]+)|([ \n]+$)"), "");
+}
 
 int main(int argc, char **argv) {
     ifstream input_file(argv[1]);
@@ -13,7 +19,11 @@ int main(int argc, char **argv) {
     while (!input_file.eof()) {
         string line;
         getline(input_file, line);
-        lines.push_back(line);
+        line = trim(line);
+        if (line != "") {
+            cout << line << '\n';
+            lines.push_back(line);
+        }
     }
 
     ofstream output_file("out.txt");
