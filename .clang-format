@@ -1,0 +1,7 @@
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: Empty
+ColumnLimit: 120
+IndentWidth: 4
+SpaceAfterCStyleCast: true
+
