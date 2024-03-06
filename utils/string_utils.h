@@ -7,9 +7,6 @@
 namespace string_utils {
     std::string trim(std::string_view str);
 
-    // https://stackoverflow.com/a/58773060
-    // return std::regex_replace(str.data(), trimPattern, "");
-
 }
 
 #endif
