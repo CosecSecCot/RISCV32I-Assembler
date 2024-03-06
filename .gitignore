@@ -2,7 +2,9 @@
 *.exe
 *.txt
 
-.cache/
-Build/
-Debug/
+.cache/*
+Build/*
+Debug/*
 compile_commands.json
+
+!CMakeLists.txt
