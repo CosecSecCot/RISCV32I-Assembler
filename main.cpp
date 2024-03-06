@@ -1,38 +1,39 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
-using namespace std;
+#include <string_view>
 
 // https://stackoverflow.com/a/58773060
-string trim(string str) {
-    return regex_replace(str, regex("(^[ \n]+)|([ \n]+$)"), "");
+std::string trim(std::string_view str) {
+    static const std::regex trimPattern = std::regex("^[\\s\\n]+|[\\s\\n]+$");
+    return std::regex_replace(str.data(), trimPattern, "");
 }
 
 int main(int argc, char **argv) {
-    ifstream input_file(argv[1]);
-    if (!input_file.is_open()) {
-        cout << "File is non-existant\n";
+    std::ifstream inputFile(argv[1]);
+    if (!inputFile.is_open()) {
+        std::cout << "File is non-existant\n";
         return -1;
     }
 
-    vector<string> lines;
-    while (!input_file.eof()) {
-        string line;
-        getline(input_file, line);
+    std::vector<std::string> lines;
+    while (!inputFile.eof()) {
+        std::string line;
+        getline(inputFile, line);
         line = trim(line);
         if (line != "") {
-            cout << line << '\n';
+            std::cout << line << '\n';
             lines.push_back(line);
         }
     }
 
-    ofstream output_file("out.txt");
+    std::ofstream outputFile("out.txt");
     for (auto line : lines) {
-        output_file << line << '\n';
+        outputFile << line << '\n';
     }
 
-    cout << "Content is written to out.txt\n";
-    output_file.close();
+    std::cout << "Content is written to out.txt\n";
+    outputFile.close();
 
     return 0;
 }
