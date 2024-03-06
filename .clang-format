@@ -2,6 +2,8 @@ BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AllowShortFunctionsOnASingleLine: Empty
 ColumnLimit: 120
+FixNamespaceComments: false
 IndentWidth: 4
+NamespaceIndentation: All
 SpaceAfterCStyleCast: true
 
