@@ -13,17 +13,18 @@ int main(int argc, char **argv) {
     std::ifstream inputFile(argv[1]);
     if (!inputFile.is_open()) {
         std::cout << "File is non-existant\n";
-        return -1;
+        return 69;
     }
 
     std::vector<std::string> lines;
     while (!inputFile.eof()) {
         std::string line;
         getline(inputFile, line);
-        line = trim(line);
-        if (line != "") {
+
+        std::string trimmedLine = trim(line);
+        if (trimmedLine != "") {
             std::cout << line << '\n';
-            lines.push_back(line);
+            lines.push_back(trimmedLine);
         }
     }
 
