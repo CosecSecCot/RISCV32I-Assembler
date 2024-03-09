@@ -7,7 +7,8 @@
 namespace string_utils {
     static const std::regex LABEL_PATTERN(R"([a-zA-Z_]+:)");
     static const std::regex OPERATION_PATTERN(R"(^[a-z]+\b)");
-    static const std::regex REGISTER_PATTERN(R"(^(r[0-6])|(zero)|(sp)\b)");
+    static const std::regex REGISTER_PATTERN(
+        R"(^(a[0-7])|(s[0-9][0-1]?)|(t[0-6])|(x[0-9][0-9]?)|(zero)|(ra)|(sp)|(gp)|(tp)|(fp)|\b)");
     static const std::regex IMM_PATTERN(R"(^[+-]?0?[xob]?\d+)");
 
     static const std::regex WHITESPACE_PATTERN(R"(^\s+)");

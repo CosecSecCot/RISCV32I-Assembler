@@ -11,7 +11,6 @@ Parser::Parser(std::ifstream &inputFileStream) {
 
         std::string trimmedLine = string_utils::trim(line);
         if (trimmedLine != "") {
-            std::cout << line << '\n';
             inputFile.push_back(trimmedLine);
         }
     }
@@ -81,4 +80,33 @@ inline void printInst(Instruction &_inst) {
               << "\nrd: " << _inst.rd << "\nrs1: " << _inst.rs1
               << "\nrs2: " << _inst.rs2 << "\nimm: " << _inst.imm
               << "\noffset: " << _inst.offset << '\n';
+}
+
+void Parser::parse() {
+    for (auto line : inputFile) {
+        std::string tmp_line(line);
+        std::string op =
+            string_utils::getRgx(tmp_line, string_utils::OPERATION_PATTERN);
+        if (op == "addi") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+                parseWhitespace(tmp_line);
+                inst.rd = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.rs1 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.imm = parseImm(tmp_line);
+
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << '\n';
+                break;
+            }
+        } else {
+            // parseError("invalid operation");
+            std::cerr << '\n' << line << "\ninvalid operation\n";
+            break;
+        }
+    }
 }

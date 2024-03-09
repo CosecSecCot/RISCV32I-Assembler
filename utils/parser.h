@@ -21,6 +21,7 @@ public:
     std::vector<std::string> inputFile;
     Parser(std::ifstream &inputFileStream);
 
+    void parse();
     inline void parseError(const char *message);
     inline std::string parseOperation(std::string &str);
     inline void parseWhitespace(std::string &str);

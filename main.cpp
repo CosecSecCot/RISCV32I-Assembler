@@ -17,13 +17,14 @@ int main(int argc, char **argv) {
     }
 
     Parser parser(inputFile);
+    parser.parse();
 
     std::ofstream outputFile("out.txt");
     for (auto line : parser.inputFile) {
         outputFile << line << '\n';
     }
 
-    std::cout << "Content is written to out.txt\n";
+    // std::cout << "Content is written to out.txt\n";
     outputFile.close();
 
     return 0;
