@@ -1,5 +1,6 @@
+#include "parser.h"
+#include "string_utils.h"
 #include <iostream>
-#include <parser.h>
 
 Parser::Parser(std::ifstream &inputFileStream) {
     this->inputFile.clear();
