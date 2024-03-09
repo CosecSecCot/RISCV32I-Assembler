@@ -14,8 +14,7 @@ namespace string_utils {
     static const std::regex COMMA_PATTERN(R"(^,\s*)");
 
     std::string trim(std::string_view str);
-    std::string getRgx(std::string &_str, std::smatch &match,
-                       const std::regex &rgx);
+    std::string getRgx(std::string &str, const std::regex &rgx);
 }
 
 #endif
