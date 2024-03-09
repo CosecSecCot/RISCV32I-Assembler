@@ -10,16 +10,10 @@ namespace string_utils {
         return std::regex_replace(str.data(), TRIM_PATTERN, "");
     }
 
-    std::string getRgx(std::string &_str, std::smatch &match,
-                       const std::regex &rgx) {
-        std::regex_search(_str, match, rgx);
-        if (!match.empty()) {
-            std::cout << match[0] << '\n';
-            _str = _str.substr(match[0].str().length());
-            return match[0];
-        }
-
-        std::cout << "Invalid Operation !!!\n";
-        return "";
+    std::string getRgx(std::string &str, const std::regex &rgx) {
+        std::smatch match;
+        std::regex_search(str, match, rgx);
+        return match[0].str();
     }
+
 }
