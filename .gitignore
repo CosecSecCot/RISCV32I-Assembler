@@ -2,6 +2,7 @@
 *.exe
 *.txt
 
+.vscode
 .cache/*
 Build/*
 Debug/*
