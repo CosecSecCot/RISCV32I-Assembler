@@ -6,15 +6,6 @@
 #include <string>
 #include <vector>
 
-struct Instruction {
-    std::string opName;
-    unsigned int rd = 0;
-    unsigned int rs1 = 0;
-    unsigned int rs2 = 0;
-    int imm;
-    int offset = 0;
-};
-
 class Parser {
 public:
     std::vector<std::string> inputFile;
