@@ -146,6 +146,7 @@ int Parser::parseImm(std::string &str, unsigned int bitSize) {
     if (match.empty()) {
         throw std::runtime_error("invalid imm");
     }
+    str = str.substr(match.length());
 
     int value = std::stoi(match);
     if (!inRange(value, bitSize)) {
@@ -360,6 +361,24 @@ void Parser::parse() {
                 inst.rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
+
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cout << line << '\n';
+                std::cerr << e.what() << '\n';
+                break;
+            }
+        } else if (op == "lw") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+                parseWhitespace(tmp_line);
+                inst.rd = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.imm = parseImm(tmp_line, 100);
+                parseOpenParen(tmp_line);
+                inst.rs1 = parseRegister(tmp_line);
+                parseCloseParen(tmp_line);
 
                 printInst(inst);
             } catch (const std::exception &e) {
