@@ -107,7 +107,17 @@ unsigned int Parser::parseRegister(std::string &str) {
         return 26;
     } else if (match == "s11") {
         return 27;
-    } 
+    } else if (match == "t3") {
+        return 28;
+    } else if (match == "t4") {
+        return 29;
+    } else if (match == "t5") {
+        return 30;
+    } else if (match == "t6") {
+        return 31;
+    } else {
+        return -1; // Or any other appropriate value
+    }
 }
 
 void Parser::parseComma(std::string &str) {
