@@ -4,7 +4,6 @@
 #include <fstream>
 #include <map>
 #include <string>
-#include <string_utils.h>
 #include <vector>
 
 struct Instruction {
@@ -33,6 +32,8 @@ public:
     int parseImm(std::string &str, unsigned int bitSize);
     void parseOpenParen(std::string &str);
     void parseCloseParen(std::string &str);
+    std::string parseITypeInst(std::string opName, unsigned int rd,
+                               unsigned int rs1, unsigned int imm);
 };
 
 #endif

@@ -1,5 +1,4 @@
 #include "string_utils.h"
-#include <iostream>
 #include <regex>
 
 namespace string_utils {
@@ -14,6 +13,14 @@ namespace string_utils {
         std::smatch match;
         std::regex_search(str, match, rgx);
         return match[0].str();
+    }
+
+    // NOTE: start >= end for reverse
+    std::string reverseSlice(std::string &str, unsigned int start,
+                             unsigned int end) {
+        std::string slice =
+            str.substr(str.length() - 1 - start, start - end + 1);
+        return slice;
     }
 
 }

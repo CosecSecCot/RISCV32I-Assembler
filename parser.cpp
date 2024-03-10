@@ -185,10 +185,62 @@ void Parser::parseCloseParen(std::string &str) {
     str = str.substr(match.length());
 }
 
-inline void printInst(Instruction &_inst) {
-    std::cout << _inst.opName << "\nrd: " << _inst.rd << "\nrs1: " << _inst.rs1
-              << "\nrs2: " << _inst.rs2 << "\nimm: " << _inst.imm
-              << "\noffset: " << _inst.offset << '\n';
+std::string Parser::parseITypeInst(std::string opName, unsigned int rd,
+                                   unsigned int rs1, unsigned int imm) {
+    std::string output = "";
+    if (opName == "addi") {
+        output = "0010011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "000" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        std::string im = std::bitset<12>(imm).to_string();
+        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
+        output = slicedImm + output;
+    } else if (opName == "lw") {
+        output = "0000011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "010" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        std::string im = std::bitset<12>(imm).to_string();
+        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
+        output = slicedImm + output;
+    } else if (opName == "sltiu") {
+        output = "0010011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "011" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        std::string im = std::bitset<12>(imm).to_string();
+        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
+        output = slicedImm + output;
+    } else if (opName == "jalr") {
+        output = "1100111";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "000" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        std::string im = std::bitset<12>(imm).to_string();
+        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
+        output = slicedImm + output;
+    }
+
+    std::cout << "Binary output: ";
+    std::cout << output;
+    return output;
 }
 
 void Parser::parse() {
@@ -214,16 +266,16 @@ void Parser::parse() {
             string_utils::getRgx(tmp_line, string_utils::OPERATION_PATTERN);
         if (op == "addi") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line, 100);
+                int imm = parseImm(tmp_line, 100);
 
-                printInst(inst);
+                std::string output_binary =
+                    parseITypeInst(opName, rd, rs1, imm);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -231,16 +283,15 @@ void Parser::parse() {
             }
         } else if (op == "add") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -248,16 +299,15 @@ void Parser::parse() {
             }
         } else if (op == "sub") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -265,16 +315,15 @@ void Parser::parse() {
             }
         } else if (op == "slt") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -282,16 +331,15 @@ void Parser::parse() {
             }
         } else if (op == "sltu") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -299,16 +347,15 @@ void Parser::parse() {
             }
         } else if (op == "xor") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -316,16 +363,15 @@ void Parser::parse() {
             }
         } else if (op == "sll") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -333,16 +379,15 @@ void Parser::parse() {
             }
         } else if (op == "srl") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -350,16 +395,15 @@ void Parser::parse() {
             }
         } else if (op == "or") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -367,16 +411,15 @@ void Parser::parse() {
             }
         } else if (op == "and") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -384,17 +427,16 @@ void Parser::parse() {
             }
         } else if (op == "lw") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line, 100);
+                int imm = parseImm(tmp_line, 100);
                 parseOpenParen(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseCloseParen(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -402,16 +444,15 @@ void Parser::parse() {
             }
         } else if (op == "sltiu") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line, 100);
+                int imm = parseImm(tmp_line, 100);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -419,28 +460,27 @@ void Parser::parse() {
             }
         } else if (op == "jalr") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -448,17 +488,16 @@ void Parser::parse() {
             }
         } else if (op == "sw") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line, 100);
+                int imm = parseImm(tmp_line, 100);
                 parseOpenParen(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseCloseParen(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -466,28 +505,27 @@ void Parser::parse() {
             }
         } else if (op == "beq") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -495,28 +533,27 @@ void Parser::parse() {
             }
         } else if (op == "bne") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -524,28 +561,27 @@ void Parser::parse() {
             }
         } else if (op == "bge") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -553,28 +589,27 @@ void Parser::parse() {
             }
         } else if (op == "bgeu") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -582,28 +617,27 @@ void Parser::parse() {
             }
         } else if (op == "blt") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -611,28 +645,27 @@ void Parser::parse() {
             }
         } else if (op == "bltu") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
+                    int offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -640,14 +673,13 @@ void Parser::parse() {
             }
         } else if (op == "auipc") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line, 100);
+                int imm = parseImm(tmp_line, 100);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -655,14 +687,13 @@ void Parser::parse() {
             }
         } else if (op == "lui") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line, 100);
+                int imm = parseImm(tmp_line, 100);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -670,26 +701,33 @@ void Parser::parse() {
             }
         } else if (op == "jal") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
                 try {
-                    inst.offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
+                    int offset = parseImm(tmp_line, 12);
+                } catch (const std::exception) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                    int offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                try {
+                    parseOpenParen(tmp_line);
+                    parseRegister(tmp_line);
+                    parseCloseParen(tmp_line);
+                } catch (const std::exception) {
+                    // do nothing
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -697,16 +735,15 @@ void Parser::parse() {
             }
         } else if (op == "mul") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs2 = parseRegister(tmp_line);
+                unsigned int rs2 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -714,10 +751,9 @@ void Parser::parse() {
             }
         } else if (op == "rst") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -725,10 +761,9 @@ void Parser::parse() {
             }
         } else if (op == "halt") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -736,14 +771,13 @@ void Parser::parse() {
             }
         } else if (op == "rvrs") {
             try {
-                Instruction inst;
-                inst.opName = parseOperation(tmp_line);
+                std::string opName = parseOperation(tmp_line);
                 parseWhitespace(tmp_line);
-                inst.rd = parseRegister(tmp_line);
+                unsigned int rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.rs1 = parseRegister(tmp_line);
+                unsigned int rs1 = parseRegister(tmp_line);
 
-                printInst(inst);
+                // printInst(inst);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
