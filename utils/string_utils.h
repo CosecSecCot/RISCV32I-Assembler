@@ -5,6 +5,7 @@
 #include <string>
 
 namespace string_utils {
+    static const std::regex LABEL_NAME_PATTERN(R"(^[a-zA-Z_]+)");
     static const std::regex LABEL_PATTERN(R"([a-zA-Z_]+:\s*)");
     static const std::regex OPERATION_PATTERN(R"(^[a-z]+\b)");
     static const std::regex REGISTER_PATTERN(

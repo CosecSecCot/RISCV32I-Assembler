@@ -24,6 +24,17 @@ void Parser::parseError(const char *message) {
     throw std::runtime_error(message);
 };
 
+std::string Parser::parseLabelName(std::string &str) {
+    std::string match =
+        string_utils::getRgx(str, string_utils::LABEL_NAME_PATTERN);
+    if (match.empty()) {
+        throw std::runtime_error("invalid label");
+    }
+
+    str = str.substr(match.length());
+    return match;
+}
+
 std::string Parser::parseLabel(std::string &str) {
     std::string match = string_utils::getRgx(str, string_utils::LABEL_PATTERN);
     if (match.empty()) {
@@ -181,10 +192,11 @@ inline void printInst(Instruction &_inst) {
 }
 
 void Parser::parse() {
-    for (unsigned int lineNo = 0; lineNo < this->inputFile.size(); lineNo++) {
-        std::string currLabel = parseLabel(this->inputFile[lineNo]);
+    for (unsigned int i = 0; i < this->inputFile.size(); ++i) {
+        unsigned int lineNo = i + 1;
+        std::string currLabel = parseLabel(this->inputFile[i]);
         if (currLabel != "") {
-            this->labelLocations.insert({currLabel, lineNo});
+            this->labelLocations.insert({parseLabelName(currLabel), lineNo});
         }
     }
 
@@ -194,8 +206,10 @@ void Parser::parse() {
     }
     std::cout << '\n';
 
-    for (auto line : this->inputFile) {
-        std::string tmp_line(line);
+    for (unsigned int i = 0; i < this->inputFile.size(); ++i) {
+        unsigned int lineNo = i + 1;
+        std::string tmp_line(this->inputFile[i]);
+
         std::string op =
             string_utils::getRgx(tmp_line, string_utils::OPERATION_PATTERN);
         if (op == "addi") {
@@ -211,7 +225,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -228,7 +242,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -245,7 +259,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -262,7 +276,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -279,7 +293,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -296,7 +310,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -313,7 +327,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -330,7 +344,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -347,7 +361,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -364,7 +378,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -382,7 +396,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -399,7 +413,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -412,11 +426,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -434,7 +460,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -447,11 +473,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -464,11 +502,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -481,11 +531,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -498,11 +560,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -515,11 +589,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -532,11 +618,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -551,7 +649,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -566,7 +664,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -577,11 +675,23 @@ void Parser::parse() {
                 parseWhitespace(tmp_line);
                 inst.rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line, 100);
+                try {
+                    inst.offset = parseImm(tmp_line, 12);
+                } catch (const std::exception &_) {
+                    std::string labelName = parseLabelName(tmp_line);
+                    if (!labelLocations[labelName]) {
+                        throw std::runtime_error("invalid label name");
+                    }
+                    inst.offset = (labelLocations[labelName] - lineNo) * 4;
+                }
+
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -598,7 +708,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -609,7 +719,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -620,7 +730,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -635,13 +745,13 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
-                std::cout << line << '\n';
+                std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
         } else {
             // parseError("invalid operation");
-            std::cerr << '\n' << line << "\ninvalid operation\n";
+            std::cerr << '\n' << this->inputFile[i] << "\ninvalid operation\n";
             break;
         }
         std::cout << '\n';

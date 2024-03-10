@@ -24,6 +24,7 @@ public:
 
     void parse();
     inline void parseError(const char *message);
+    std::string parseLabelName(std::string &str);
     std::string parseLabel(std::string &str);
     std::string parseOperation(std::string &str);
     void parseWhitespace(std::string &str);
