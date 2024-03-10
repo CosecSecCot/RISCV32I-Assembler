@@ -54,7 +54,7 @@ unsigned int Parser::parseRegister(std::string &str) {
     if (match == "zero") {
         return 0;
     }
-    return (match[1] - '0');
+
 }
 
 void Parser::parseComma(std::string &str) {
