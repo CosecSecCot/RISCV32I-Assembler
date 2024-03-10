@@ -67,6 +67,10 @@ unsigned int Parser::parseRegister(std::string &str) {
         return 6;
     } else if (match == "t2") {
         return 7;
+    } else if (match == "s0" || match == "fp") {
+        return 8;
+    } else if (match == "s1") {
+        return 9;
     } 
 }
 
