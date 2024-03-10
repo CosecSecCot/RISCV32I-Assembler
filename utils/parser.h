@@ -23,8 +23,12 @@ public:
     int parseImm(std::string &str, unsigned int bitSize);
     void parseOpenParen(std::string &str);
     void parseCloseParen(std::string &str);
+    std::string parseRTypeInst(std::string opName, unsigned int rd,
+                               unsigned int rs1, unsigned int rs2);
     std::string parseITypeInst(std::string opName, unsigned int rd,
                                unsigned int rs1, unsigned int imm);
+    std::string parseSTypeInst(std::string opName, unsigned int rs1,
+                               unsigned int rs2, unsigned int imm);
 };
 
 #endif

@@ -185,6 +185,124 @@ void Parser::parseCloseParen(std::string &str) {
     str = str.substr(match.length());
 }
 
+std::string Parser::parseRTypeInst(std::string opName, unsigned int rd,
+                                   unsigned int rs1, unsigned int rs2) {
+    std::string output = "";
+    if (opName == "add") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "000" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "sub") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "000" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0100000" + output;
+    } else if (opName == "sll") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "001" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "slt") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "010" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "sltu") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "011" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "xor") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "100" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "srl") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "101" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "or") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "110" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    } else if (opName == "and") {
+        output = "0110011";
+        output = " " + output;
+        output = std::bitset<5>(rd).to_string() + output;
+        output = " " + output;
+        output = "111" + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = "0000000" + output;
+    }
+
+    std::cout << "R Type Binary output: ";
+    std::cout << output;
+    return output;
+}
+
 std::string Parser::parseITypeInst(std::string opName, unsigned int rd,
                                    unsigned int rs1, unsigned int imm) {
     std::string output = "";
@@ -238,7 +356,30 @@ std::string Parser::parseITypeInst(std::string opName, unsigned int rd,
         output = slicedImm + output;
     }
 
-    std::cout << "Binary output: ";
+    std::cout << "I Type Binary output: ";
+    std::cout << output;
+    return output;
+}
+
+std::string parseSTypeInst(std::string opName, unsigned int rs1,
+                           unsigned int rs2, unsigned int imm) {
+    std::string output = "";
+    if (opName == "sw") {
+        output = "0100011";
+        output = " " + output;
+        std::string im = std::bitset<12>(imm).to_string() + output;
+        std::string slicedImm = string_utils::reverseSlice(im, 4, 0);
+        output = slicedImm + output;
+        output = "010" + output;
+        output = std::bitset<5>(rs1).to_string() + output;
+        output = " " + output;
+        output = std::bitset<5>(rs2).to_string() + output;
+        output = " " + output;
+        slicedImm = string_utils::reverseSlice(im, 11, 5);
+        output = slicedImm + output;
+    }
+
+    std::cout << "S Type Binary output: ";
     std::cout << output;
     return output;
 }
@@ -274,8 +415,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 int imm = parseImm(tmp_line, 100);
 
-                std::string output_binary =
-                    parseITypeInst(opName, rd, rs1, imm);
+                std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -291,7 +431,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -307,7 +447,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -323,7 +463,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -339,7 +479,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -355,7 +495,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -371,7 +511,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -387,7 +527,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -403,7 +543,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -419,7 +559,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -436,7 +576,7 @@ void Parser::parse() {
                 unsigned int rs1 = parseRegister(tmp_line);
                 parseCloseParen(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -452,7 +592,7 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 int imm = parseImm(tmp_line, 100);
 
-                // printInst(inst);
+                std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -466,21 +606,23 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
+                int offset;
                 try {
-                    int offset = parseImm(tmp_line, 12);
+                    offset = parseImm(tmp_line, 12);
                 } catch (const std::exception &_) {
                     std::string labelName = parseLabelName(tmp_line);
                     if (!labelLocations[labelName]) {
                         throw std::runtime_error("invalid label name");
                     }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
+                    offset = (labelLocations[labelName] - lineNo) * 4;
                 }
 
                 if (!tmp_line.empty()) {
                     throw std::runtime_error("expect end of line");
                 }
 
-                // printInst(inst);
+                std::string outputBinary =
+                    parseITypeInst(opName, rd, rs1, offset);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
