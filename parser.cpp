@@ -427,7 +427,16 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-        
+        } else if (op == "halt") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << '\n';
+                break;
+            }
         } else {
             // parseError("invalid operation");
             std::cerr << '\n' << line << "\ninvalid operation\n";
