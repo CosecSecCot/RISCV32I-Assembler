@@ -87,6 +87,26 @@ unsigned int Parser::parseRegister(std::string &str) {
         return 16;
     } else if (match == "a7") {
         return 17;
+    } else if (match == "s2") {
+        return 18;
+    } else if (match == "s3") {
+        return 19;
+    } else if (match == "s4") {
+        return 20;
+    } else if (match == "s5") {
+        return 21;
+    } else if (match == "s6") {
+        return 22;
+    } else if (match == "s7") {
+        return 23;
+    } else if (match == "s8") {
+        return 24;
+    } else if (match == "s9") {
+        return 25;
+    } else if (match == "s10") {
+        return 26;
+    } else if (match == "s11") {
+        return 27;
     } 
 }
 
