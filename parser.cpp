@@ -59,6 +59,8 @@ unsigned int Parser::parseRegister(std::string &str) {
         return 2;
     } else if (match == "gp") {
         return 3;
+    } else if (match == "tp") {
+        return 4;
     } 
 }
 
