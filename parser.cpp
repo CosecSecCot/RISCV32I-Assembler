@@ -151,7 +151,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-        } else if (op == "xor") {            
+        } else if (op == "xor") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -215,7 +215,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-         } else if (op == "and") {
+        } else if (op == "and") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -231,7 +231,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-         } else if (op == "sltiu") {
+        } else if (op == "sltiu") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -247,7 +247,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-         } else if (op == "jalr") {
+        } else if (op == "jalr") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -279,7 +279,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-         } else if (op == "bne") {
+        } else if (op == "bne") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -295,7 +295,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-         } else if (op == "bge") {
+        } else if (op == "bge") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -327,7 +327,38 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
+        } else if (op == "blt") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+                parseWhitespace(tmp_line);
+                inst.rs1 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.rs2 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.offset = parseImm(tmp_line);
 
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << '\n';
+                break;
+            }
+        } else if (op == "bltu") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+                parseWhitespace(tmp_line);
+                inst.rs1 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.rs2 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.offset = parseImm(tmp_line);
+
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << '\n';
+                break;
+            }
         } else {
             // parseError("invalid operation");
             std::cerr << '\n' << line << "\ninvalid operation\n";
