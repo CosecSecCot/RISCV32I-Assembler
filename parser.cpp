@@ -53,8 +53,9 @@ unsigned int Parser::parseRegister(std::string &str) {
     // TODO: add more register variants
     if (match == "zero") {
         return 0;
-    }
-
+    } else if (match == "ra") {
+        return 1;
+    } 
 }
 
 void Parser::parseComma(std::string &str) {
