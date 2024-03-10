@@ -103,6 +103,22 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
+        } else if (op == "add") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+                parseWhitespace(tmp_line);
+                inst.rd = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.rs1 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.rs2 = parseRegister(tmp_line);
+
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << '\n';
+                break;
+            }
         } else if (op == "sub") {
             try {
                 Instruction inst;
