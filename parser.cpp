@@ -279,6 +279,24 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
+        } else if (op == "sw") {
+            try {
+                Instruction inst;
+                inst.opName = parseOperation(tmp_line);
+                parseWhitespace(tmp_line);
+                inst.rs2 = parseRegister(tmp_line);
+                parseComma(tmp_line);
+                inst.imm = parseImm(tmp_line, 100);
+                parseOpenParen(tmp_line);
+                inst.rs1 = parseRegister(tmp_line);
+                parseCloseParen(tmp_line);
+
+                printInst(inst);
+            } catch (const std::exception &e) {
+                std::cout << line << '\n';
+                std::cerr << e.what() << '\n';
+                break;
+            }
         } else if (op == "beq") {
             try {
                 Instruction inst;
