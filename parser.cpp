@@ -11,7 +11,7 @@ Parser::Parser(std::ifstream &inputFileStream) {
 
         std::string trimmedLine = string_utils::trim(line);
         if (trimmedLine != "") {
-            inputFile.push_back(trimmedLine);
+            this->inputFile.push_back(trimmedLine);
         }
     }
 }
@@ -23,6 +23,16 @@ inline bool inRange(int x, int n) {
 void Parser::parseError(const char *message) {
     throw std::runtime_error(message);
 };
+
+std::string Parser::parseLabel(std::string &str) {
+    std::string match = string_utils::getRgx(str, string_utils::LABEL_PATTERN);
+    if (match.empty()) {
+        return "";
+    }
+
+    str = str.substr(match.length());
+    return match;
+}
 
 std::string Parser::parseOperation(std::string &str) {
     std::string match =
@@ -164,14 +174,26 @@ void Parser::parseCloseParen(std::string &str) {
 }
 
 inline void printInst(Instruction &_inst) {
-    std::cout << _inst.opName << "\nlabel(if it is): " << _inst.label
-              << "\nrd: " << _inst.rd << "\nrs1: " << _inst.rs1
+    std::cout << _inst.opName << "\nrd: " << _inst.rd << "\nrs1: " << _inst.rs1
               << "\nrs2: " << _inst.rs2 << "\nimm: " << _inst.imm
               << "\noffset: " << _inst.offset << '\n';
 }
 
 void Parser::parse() {
-    for (auto line : inputFile) {
+    for (unsigned int lineNo = 0; lineNo < this->inputFile.size(); lineNo++) {
+        std::string currLabel = parseLabel(this->inputFile[lineNo]);
+        if (currLabel != "") {
+            this->labelLocations.insert({currLabel, lineNo});
+        }
+    }
+
+    std::cout << "LABEL\tLINE NUMBER\n";
+    for (const auto &[label, lineno] : labelLocations) {
+        std::cout << label << '\t' << lineno << '\n';
+    }
+    std::cout << '\n';
+
+    for (auto line : this->inputFile) {
         std::string tmp_line(line);
         std::string op =
             string_utils::getRgx(tmp_line, string_utils::OPERATION_PATTERN);
@@ -184,10 +206,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line);
+                inst.imm = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -204,6 +227,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -220,6 +244,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -236,6 +261,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -252,6 +278,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -268,6 +295,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -284,6 +312,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -300,6 +329,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -316,6 +346,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -332,6 +363,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -344,10 +376,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line);
+                inst.imm = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -360,10 +393,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs1 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -376,10 +410,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -392,10 +427,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -408,10 +444,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -424,10 +461,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -440,10 +478,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -456,10 +495,11 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 inst.rs2 = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -470,10 +510,11 @@ void Parser::parse() {
                 parseWhitespace(tmp_line);
                 inst.rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line);
+                inst.imm = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -484,10 +525,11 @@ void Parser::parse() {
                 parseWhitespace(tmp_line);
                 inst.rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.imm = parseImm(tmp_line);
+                inst.imm = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -498,10 +540,11 @@ void Parser::parse() {
                 parseWhitespace(tmp_line);
                 inst.rd = parseRegister(tmp_line);
                 parseComma(tmp_line);
-                inst.offset = parseImm(tmp_line);
+                inst.offset = parseImm(tmp_line, 100);
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -518,6 +561,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -528,6 +572,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -538,6 +583,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -552,6 +598,7 @@ void Parser::parse() {
 
                 printInst(inst);
             } catch (const std::exception &e) {
+                std::cout << line << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
@@ -560,5 +607,6 @@ void Parser::parse() {
             std::cerr << '\n' << line << "\ninvalid operation\n";
             break;
         }
+        std::cout << '\n';
     }
 }

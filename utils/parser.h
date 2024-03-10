@@ -2,27 +2,29 @@
 #define _PARSER_H
 
 #include <fstream>
+#include <map>
 #include <string>
 #include <string_utils.h>
 #include <vector>
 
 struct Instruction {
     std::string opName;
-    std::string label;
-    unsigned int rd;
-    unsigned int rs1;
-    unsigned int rs2;
+    unsigned int rd = 0;
+    unsigned int rs1 = 0;
+    unsigned int rs2 = 0;
     int imm;
-    int offset;
+    int offset = 0;
 };
 
 class Parser {
 public:
     std::vector<std::string> inputFile;
     Parser(std::ifstream &inputFileStream);
+    std::map<std::string, unsigned int> labelLocations;
 
     void parse();
     inline void parseError(const char *message);
+    std::string parseLabel(std::string &str);
     std::string parseOperation(std::string &str);
     void parseWhitespace(std::string &str);
     unsigned int parseRegister(std::string &str);
