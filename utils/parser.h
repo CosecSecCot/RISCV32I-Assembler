@@ -23,11 +23,13 @@ public:
 
     void parse();
     inline void parseError(const char *message);
-    inline std::string parseOperation(std::string &str);
-    inline void parseWhitespace(std::string &str);
-    inline unsigned int parseRegister(std::string &str);
-    inline void parseComma(std::string &str);
-    inline int parseImm(std::string &str);
+    std::string parseOperation(std::string &str);
+    void parseWhitespace(std::string &str);
+    unsigned int parseRegister(std::string &str);
+    void parseComma(std::string &str);
+    int parseImm(std::string &str, unsigned int bitSize);
+    void parseOpenParen(std::string &str);
+    void parseCloseParen(std::string &str);
 };
 
 #endif

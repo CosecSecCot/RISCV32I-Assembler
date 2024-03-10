@@ -16,6 +16,10 @@ Parser::Parser(std::ifstream &inputFileStream) {
     }
 }
 
+inline bool inRange(int x, int n) {
+    return (-1 * std::pow(2, n - 1) <= x) && (x <= std::pow(2, n - 1) - 1);
+}
+
 void Parser::parseError(const char *message) {
     throw std::runtime_error(message);
 };
@@ -24,8 +28,7 @@ std::string Parser::parseOperation(std::string &str) {
     std::string match =
         string_utils::getRgx(str, string_utils::OPERATION_PATTERN);
     if (match.empty()) {
-        parseError("invalid operation");
-        return "";
+        throw std::runtime_error("invalid operation");
     }
 
     str = str.substr(match.length());
@@ -36,7 +39,7 @@ void Parser::parseWhitespace(std::string &str) {
     std::string match =
         string_utils::getRgx(str, string_utils::WHITESPACE_PATTERN);
     if (match.empty()) {
-        parseError("invalid operation");
+        throw std::runtime_error("whitespace expected");
     }
     str = str.substr(match.length());
 }
@@ -45,7 +48,7 @@ unsigned int Parser::parseRegister(std::string &str) {
     std::string match =
         string_utils::getRgx(str, string_utils::REGISTER_PATTERN);
     if (match.empty()) {
-        parseError("invalid register");
+        throw std::runtime_error("invalid register");
     }
 
     str = str.substr(match.length());
@@ -116,26 +119,48 @@ unsigned int Parser::parseRegister(std::string &str) {
     } else if (match == "t6") {
         return 31;
     } else {
-        parseError("invalid register");
+        throw std::runtime_error("invalid register");
     }
 }
 
 void Parser::parseComma(std::string &str) {
     std::string match = string_utils::getRgx(str, string_utils::COMMA_PATTERN);
     if (match.empty()) {
-        parseError("comma expected");
+        throw std::runtime_error("comma expected");
     }
     str = str.substr(match.length());
 }
 
-int Parser::parseImm(std::string &str) {
+int Parser::parseImm(std::string &str, unsigned int bitSize) {
     std::string match = string_utils::getRgx(str, string_utils::IMM_PATTERN);
     if (match.empty()) {
-        parseError("invalid imm");
+        throw std::runtime_error("invalid imm");
     }
 
+    int value = std::stoi(match);
+    if (!inRange(value, bitSize)) {
+        throw std::runtime_error("imm out of range");
+    } else {
+        return value;
+    }
+}
+
+void Parser::parseOpenParen(std::string &str) {
+    std::string match =
+        string_utils::getRgx(str, string_utils::OPEN_PAREN_PATTERN);
+    if (match.empty()) {
+        throw std::runtime_error("parenthesis expected");
+    }
     str = str.substr(match.length());
-    return std::stoi(match);
+}
+
+void Parser::parseCloseParen(std::string &str) {
+    std::string match =
+        string_utils::getRgx(str, string_utils::CLOSE_PAREN_PATTERN);
+    if (match.empty()) {
+        throw std::runtime_error("closing parenthesis expected");
+    }
+    str = str.substr(match.length());
 }
 
 inline void printInst(Instruction &_inst) {

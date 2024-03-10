@@ -13,6 +13,8 @@ namespace string_utils {
 
     static const std::regex WHITESPACE_PATTERN(R"(^\s+)");
     static const std::regex COMMA_PATTERN(R"(^,\s*)");
+    static const std::regex OPEN_PAREN_PATTERN(R"(^\(\s*)");
+    static const std::regex CLOSE_PAREN_PATTERN(R"(^\s*\))");
 
     std::string trim(std::string_view str);
     std::string getRgx(std::string &str, const std::regex &rgx);
