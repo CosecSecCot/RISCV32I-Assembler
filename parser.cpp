@@ -116,7 +116,7 @@ unsigned int Parser::parseRegister(std::string &str) {
     } else if (match == "t6") {
         return 31;
     } else {
-        return -1; // Or any other appropriate value
+        parseError("invalid register");
     }
 }
 
