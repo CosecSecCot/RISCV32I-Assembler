@@ -103,8 +103,7 @@ void Parser::parse() {
                 std::cerr << e.what() << '\n';
                 break;
             }
-    }
-       else if (op == "sub") {
+        } else if (op == "sub") {
             try {
                 Instruction inst;
                 inst.opName = parseOperation(tmp_line);
@@ -119,9 +118,8 @@ void Parser::parse() {
             } catch (const std::exception &e) {
                 std::cerr << e.what() << '\n';
                 break;
-            } 
-    }   
-        else {
+            }
+        } else {
             // parseError("invalid operation");
             std::cerr << '\n' << line << "\ninvalid operation\n";
             break;
