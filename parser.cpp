@@ -185,117 +185,45 @@ void Parser::parseCloseParen(std::string &str) {
     str = str.substr(match.length());
 }
 
+std::string collectBinaryRType(std::string opcode, unsigned int rd,
+                               std::string funct3, unsigned int rs1,
+                               unsigned int rs2, std::string funct7) {
+    std::string output = "";
+    output = opcode;
+    output = " " + output;
+    output = std::bitset<5>(rd).to_string() + output;
+    output = " " + output;
+    output = funct3 + output;
+    output = " " + output;
+    output = std::bitset<5>(rs1).to_string() + output;
+    output = " " + output;
+    output = std::bitset<5>(rs1).to_string() + output;
+    output = " " + output;
+    output = funct7 + output;
+    return output;
+}
+
 std::string Parser::parseRTypeInst(std::string opName, unsigned int rd,
                                    unsigned int rs1, unsigned int rs2) {
     std::string output = "";
     if (opName == "add") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "000" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "000", rs1, rs2, "0000000");
     } else if (opName == "sub") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "000" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0100000" + output;
+        output = collectBinaryRType("0110011", rd, "000", rs1, rs2, "0100000");
     } else if (opName == "sll") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "001" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "001", rs1, rs2, "0000000");
     } else if (opName == "slt") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "010" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "010", rs1, rs2, "0000000");
     } else if (opName == "sltu") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "011" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "011", rs1, rs2, "0000000");
     } else if (opName == "xor") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "100" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "100", rs1, rs2, "0000000");
     } else if (opName == "srl") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "101" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "101", rs1, rs2, "0000000");
     } else if (opName == "or") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "110" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "110", rs1, rs2, "0000000");
     } else if (opName == "and") {
-        output = "0110011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "111" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = "0000000" + output;
+        output = collectBinaryRType("0110011", rd, "111", rs1, rs2, "0000000");
     }
 
     std::cout << "R Type Binary output: ";
@@ -303,57 +231,49 @@ std::string Parser::parseRTypeInst(std::string opName, unsigned int rd,
     return output;
 }
 
+void Parser::computeRTypeInst(std::string &tmp_line) {
+    std::string opName = parseOperation(tmp_line);
+    parseWhitespace(tmp_line);
+    unsigned int rd = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    unsigned int rs1 = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    unsigned int rs2 = parseRegister(tmp_line);
+    if (!tmp_line.empty()) {
+        throw std::runtime_error("expect end of line");
+    }
+
+    std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
+}
+
+std::string collectBinaryIType(std::string opcode, unsigned int rd,
+                               std::string funct3, unsigned int rs1, int imm) {
+    std::string output = "";
+    output = opcode;
+    output = " " + output;
+    output = std::bitset<5>(rd).to_string() + output;
+    output = " " + output;
+    output = funct3 + output;
+    output = " " + output;
+    output = std::bitset<5>(rs1).to_string() + output;
+    output = " " + output;
+    std::string _imm = std::bitset<12>(imm).to_string();
+    std::string slicedImm = string_utils::reverseSlice(_imm, 11, 0);
+    output = slicedImm + output;
+    return output;
+}
+
 std::string Parser::parseITypeInst(std::string opName, unsigned int rd,
-                                   unsigned int rs1, unsigned int imm) {
+                                   unsigned int rs1, int imm) {
     std::string output = "";
     if (opName == "addi") {
-        output = "0010011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "000" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        std::string im = std::bitset<12>(imm).to_string();
-        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
-        output = slicedImm + output;
+        output = collectBinaryIType("0010011", rd, "000", rs1, imm);
     } else if (opName == "lw") {
-        output = "0000011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "010" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        std::string im = std::bitset<12>(imm).to_string();
-        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
-        output = slicedImm + output;
+        output = collectBinaryIType("0000011", rd, "010", rs1, imm);
     } else if (opName == "sltiu") {
-        output = "0010011";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "011" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        std::string im = std::bitset<12>(imm).to_string();
-        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
-        output = slicedImm + output;
+        output = collectBinaryIType("0010011", rd, "011", rs1, imm);
     } else if (opName == "jalr") {
-        output = "1100111";
-        output = " " + output;
-        output = std::bitset<5>(rd).to_string() + output;
-        output = " " + output;
-        output = "000" + output;
-        output = " " + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        std::string im = std::bitset<12>(imm).to_string();
-        std::string slicedImm = string_utils::reverseSlice(im, 11, 0);
-        output = slicedImm + output;
+        output = collectBinaryIType("1100111", rd, "000", rs1, imm);
     }
 
     std::cout << "I Type Binary output: ";
@@ -361,25 +281,93 @@ std::string Parser::parseITypeInst(std::string opName, unsigned int rd,
     return output;
 }
 
+void Parser::computeITypeInst(std::string &tmp_line) {
+    std::string opName = parseOperation(tmp_line);
+    parseWhitespace(tmp_line);
+    unsigned int rd = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    unsigned int rs1 = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    int imm = parseImm(tmp_line, 100);
+    if (!tmp_line.empty()) {
+        throw std::runtime_error("expect end of line");
+    }
+
+    std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
+}
+
+std::string collectBinarySType(std::string opcode, int imm, std::string funct3,
+                               unsigned int rs1, unsigned int rs2) {
+    std::string output = "";
+    output = opcode;
+    output = " " + output;
+    std::string _imm = std::bitset<12>(imm).to_string();
+    std::string slicedImm = string_utils::reverseSlice(_imm, 4, 0);
+    output = slicedImm + output;
+    output = " " + output;
+    output = funct3 + output;
+    output = " " + output;
+    output = std::bitset<5>(rs1).to_string() + output;
+    output = " " + output;
+    output = std::bitset<5>(rs2).to_string() + output;
+    output = " " + output;
+    slicedImm = string_utils::reverseSlice(_imm, 11, 5);
+    output = slicedImm + output;
+    return output;
+}
+
 std::string parseSTypeInst(std::string opName, unsigned int rs1,
-                           unsigned int rs2, unsigned int imm) {
+                           unsigned int rs2, int imm) {
     std::string output = "";
     if (opName == "sw") {
-        output = "0100011";
-        output = " " + output;
-        std::string im = std::bitset<12>(imm).to_string() + output;
-        std::string slicedImm = string_utils::reverseSlice(im, 4, 0);
-        output = slicedImm + output;
-        output = "010" + output;
-        output = std::bitset<5>(rs1).to_string() + output;
-        output = " " + output;
-        output = std::bitset<5>(rs2).to_string() + output;
-        output = " " + output;
-        slicedImm = string_utils::reverseSlice(im, 11, 5);
-        output = slicedImm + output;
+        output = collectBinarySType("0100011", imm, "010", rs1, rs2);
     }
 
     std::cout << "S Type Binary output: ";
+    std::cout << output;
+    return output;
+}
+
+std::string collectBinaryBType(std::string opcode, int imm, std::string funct3,
+                               unsigned int rs1, unsigned int rs2) {
+    std::string output = "";
+    output = opcode;
+    output = " " + output;
+    std::string _imm = std::bitset<13>(imm).to_string();
+    std::string slicedImm = string_utils::reverseSlice(_imm, 4, 1);
+    slicedImm += string_utils::reverseSlice(_imm, 11, 11);
+    output = slicedImm + output;
+    output = " " + output;
+    output = funct3 + output;
+    output = " " + output;
+    output = std::bitset<5>(rs1).to_string() + output;
+    output = " " + output;
+    output = std::bitset<5>(rs2).to_string() + output;
+    output = " " + output;
+    slicedImm = string_utils::reverseSlice(_imm, 12, 12);
+    slicedImm += string_utils::reverseSlice(_imm, 10, 5);
+    output = slicedImm + output;
+    return output;
+}
+
+std::string parseBTypeInst(std::string opName, unsigned int rs1,
+                           unsigned int rs2, int offset) {
+    std::string output = "";
+    if (opName == "beq") {
+        output = collectBinaryBType("1100011", offset, "000", rs1, rs2);
+    } else if (opName == "bne") {
+        output = collectBinaryBType("1100011", offset, "001", rs1, rs2);
+    } else if (opName == "blt") {
+        output = collectBinaryBType("1100011", offset, "100", rs1, rs2);
+    } else if (opName == "bge") {
+        output = collectBinaryBType("1100011", offset, "101", rs1, rs2);
+    } else if (opName == "bltu") {
+        output = collectBinaryBType("1100011", offset, "110", rs1, rs2);
+    } else if (opName == "bgeu") {
+        output = collectBinaryBType("1100011", offset, "111", rs1, rs2);
+    }
+
+    std::cout << "B Type Binary output: ";
     std::cout << output;
     return output;
 }
@@ -405,161 +393,19 @@ void Parser::parse() {
 
         std::string op =
             string_utils::getRgx(tmp_line, string_utils::OPERATION_PATTERN);
-        if (op == "addi") {
+        if (op == "add" || op == "sub" || op == "sll" || op == "slt" ||
+            op == "sltu" || op == "xor" || op == "srl" || op == "or" ||
+            op == "and") {
             try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                int imm = parseImm(tmp_line, 100);
-
-                std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
+                computeRTypeInst(tmp_line);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
-        } else if (op == "add") {
+        } else if (op == "addi" || op == "sltiu") {
             try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "sub") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "slt") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "sltu") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "xor") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "sll") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "srl") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "or") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "and") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-
-                std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
+                computeITypeInst(tmp_line);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -575,22 +421,6 @@ void Parser::parse() {
                 parseOpenParen(tmp_line);
                 unsigned int rs1 = parseRegister(tmp_line);
                 parseCloseParen(tmp_line);
-
-                std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "sltiu") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                int imm = parseImm(tmp_line, 100);
 
                 std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
             } catch (const std::exception &e) {

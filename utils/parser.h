@@ -25,10 +25,14 @@ public:
     void parseCloseParen(std::string &str);
     std::string parseRTypeInst(std::string opName, unsigned int rd,
                                unsigned int rs1, unsigned int rs2);
+    void computeRTypeInst(std::string &tmp_line);
     std::string parseITypeInst(std::string opName, unsigned int rd,
-                               unsigned int rs1, unsigned int imm);
+                               unsigned int rs1, int imm);
+    void computeITypeInst(std::string &tmp_line);
     std::string parseSTypeInst(std::string opName, unsigned int rs1,
-                               unsigned int rs2, unsigned int imm);
+                               unsigned int rs2, int imm);
+    std::string parseBTypeInst(std::string opName, unsigned int rs1,
+                               unsigned int rs2, int offset);
 };
 
 #endif
