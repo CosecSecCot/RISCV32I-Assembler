@@ -11,6 +11,7 @@ public:
     std::vector<std::string> inputFile;
     Parser(std::ifstream &inputFileStream);
     std::map<std::string, unsigned int> labelLocations;
+    std::string outputFileContent;
 
     void parse();
     inline void parseError(const char *message);

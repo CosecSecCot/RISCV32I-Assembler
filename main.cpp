@@ -3,28 +3,38 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        std::cout << "Missing arguments!!!\n\n";
-        std::cout << "Usage:\n";
-        std::cout << "./a.out <path/to/src/file>\n";
+    if (argc < 2 || argc > 3) {
+        std::cerr << "Missing arguments!!!\n\n";
+        std::cerr << "Usage:\n";
+        std::cerr
+            << "./path/to/a.out <path/to/input/file> <path/to/output/file><\n";
         return -1;
     }
 
     std::ifstream inputFile(argv[1]);
     if (!inputFile.is_open()) {
-        std::cout << "File is non-existant\n";
+        std::cerr << "File doesn't exist\n";
         return 69;
     }
 
     Parser parser(inputFile);
-    parser.parse();
-
-    std::ofstream outputFile("out.txt");
-    for (auto line : parser.inputFile) {
-        outputFile << line << '\n';
+    try {
+        parser.parse();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << '\n';
+        return -1;
     }
 
-    // std::cout << "Content is written to out.txt\n";
+    std::string outputFileName;
+    if (argc == 3) {
+        outputFileName = argv[2];
+    } else {
+        outputFileName = "out.txt";
+    }
+    std::ofstream outputFile(outputFileName);
+    outputFile << parser.outputFileContent;
+
+    std::cout << "output is written to " << outputFileName << '\n';
     outputFile.close();
 
     return 0;
