@@ -637,7 +637,16 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs2 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expected end of line, found: " +
+                                             tmp_line);
+                }
+
+                std::string outputBinary =
+                    "00000000" + std::bitset<5>(rs2).to_string() +
+                    std::bitset<5>(rs1).to_string() + "000" +
+                    std::bitset<5>(rd).to_string() + "1000101";
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
