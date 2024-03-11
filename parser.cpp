@@ -643,7 +643,7 @@ void Parser::parse() {
                 }
 
                 std::string outputBinary =
-                    "00000000" + std::bitset<5>(rs2).to_string() +
+                    "0000000" + std::bitset<5>(rs2).to_string() +
                     std::bitset<5>(rs1).to_string() + "000" +
                     std::bitset<5>(rd).to_string() + "1000101";
                 this->outputFileContent.push_back(outputBinary + '\n');
@@ -661,7 +661,7 @@ void Parser::parse() {
                                              tmp_line);
                 }
 
-                std::string outputBinary = std::string("00000000") + "00000" +
+                std::string outputBinary = std::string("0000000") + "00000" +
                                            "00000" + "001" + "00000" +
                                            "1000101";
                 this->outputFileContent.push_back(outputBinary + '\n');
@@ -679,7 +679,7 @@ void Parser::parse() {
                                              tmp_line);
                 }
 
-                std::string outputBinary = std::string("00000000") + "00000" +
+                std::string outputBinary = std::string("0000000") + "00000" +
                                            "00000" + "010" + "00000" +
                                            "1000101";
                 this->outputFileContent.push_back(outputBinary + '\n');
@@ -702,7 +702,7 @@ void Parser::parse() {
                 }
 
                 std::string outputBinary =
-                    std::string("00000000") + "00000" +
+                    std::string("0000000") + "00000" +
                     std::bitset<5>(rs1).to_string() + "011" +
                     std::bitset<5>(rd).to_string() + "1000101";
                 this->outputFileContent.push_back(outputBinary + '\n');
@@ -719,7 +719,8 @@ void Parser::parse() {
     }
     // std::cout << this->outputFileContent;
     for (auto line : this->outputFileContent) {
-        if (line == "00000000000000000000000001100011\n" || line == "00000000000000000010000000000000\n") {
+        if (line == "00000000000000000000000001100011\n" ||
+            line == "00000000000000000010000001000101\n") {
             this->numberOfHalts++;
         }
     }
