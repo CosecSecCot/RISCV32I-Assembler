@@ -197,7 +197,7 @@ std::string collectBinaryRType(std::string opcode, unsigned int rd,
     output = " " + output;
     output = std::bitset<5>(rs1).to_string() + output;
     output = " " + output;
-    output = std::bitset<5>(rs1).to_string() + output;
+    output = std::bitset<5>(rs2).to_string() + output;
     output = " " + output;
     output = funct7 + output;
     return output;
@@ -316,8 +316,8 @@ std::string collectBinarySType(std::string opcode, int imm, std::string funct3,
     return output;
 }
 
-std::string parseSTypeInst(std::string opName, unsigned int rs1,
-                           unsigned int rs2, int imm) {
+std::string Parser::parseSTypeInst(std::string opName, unsigned int rs1,
+                                   unsigned int rs2, int imm) {
     std::string output = "";
     if (opName == "sw") {
         output = collectBinarySType("0100011", imm, "010", rs1, rs2);
@@ -350,8 +350,8 @@ std::string collectBinaryBType(std::string opcode, int imm, std::string funct3,
     return output;
 }
 
-std::string parseBTypeInst(std::string opName, unsigned int rs1,
-                           unsigned int rs2, int offset) {
+std::string Parser::parseBTypeInst(std::string opName, unsigned int rs1,
+                                   unsigned int rs2, int offset) {
     std::string output = "";
     if (opName == "beq") {
         output = collectBinaryBType("1100011", offset, "000", rs1, rs2);
@@ -370,6 +370,125 @@ std::string parseBTypeInst(std::string opName, unsigned int rs1,
     std::cout << "B Type Binary output: ";
     std::cout << output;
     return output;
+}
+
+void Parser::computeBTypeInst(std::string &tmp_line, unsigned int lineNo) {
+    std::string opName = parseOperation(tmp_line);
+    parseWhitespace(tmp_line);
+    unsigned int rs1 = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    unsigned int rs2 = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    int offset;
+    try {
+        offset = parseImm(tmp_line, 12);
+    } catch (const std::exception &_) {
+        std::string labelName = parseLabelName(tmp_line);
+        if (!labelLocations[labelName]) {
+            throw std::runtime_error("invalid label/imm");
+        }
+        offset = (labelLocations[labelName] - lineNo) * 4;
+    }
+
+    if (!tmp_line.empty()) {
+        throw std::runtime_error("expect end of line");
+    }
+
+    std::string outputBinary = parseBTypeInst(opName, rs1, rs2, offset);
+}
+
+std::string collectBinaryUType(std::string opcode, unsigned int rd, int imm) {
+    std::string output = "";
+    output = opcode;
+    output = " " + output;
+    output = std::bitset<5>(rd).to_string() + output;
+    output = " " + output;
+    std::string _imm = std::bitset<32>(imm).to_string();
+    std::string slicedImm = string_utils::reverseSlice(_imm, 31, 12);
+    output = slicedImm + output;
+    return output;
+}
+
+std::string Parser::parseUTypeInst(std::string opName, unsigned int rd,
+                                   int imm) {
+    std::string output = "";
+    if (opName == "auipc") {
+        output = collectBinaryUType("0010111", rd, imm);
+    } else if (opName == "lui") {
+        output = collectBinaryUType("0110111", rd, imm);
+    }
+
+    std::cout << "U Type Binary output: ";
+    std::cout << output;
+    return output;
+}
+
+void Parser::computeUTypeInst(std::string &tmp_line) {
+    std::string opName = parseOperation(tmp_line);
+    parseWhitespace(tmp_line);
+    unsigned int rd = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    int imm = parseImm(tmp_line, 100);
+
+    std::string outputBinary = parseUTypeInst(opName, rd, imm);
+}
+
+std::string collectBinaryJType(std::string opcode, unsigned int rd, int imm) {
+    std::string output = "";
+    output = opcode;
+    output = " " + output;
+    output = std::bitset<5>(rd).to_string() + output;
+    output = " " + output;
+    std::string _imm = std::bitset<21>(imm).to_string();
+    std::string slicedImm = string_utils::reverseSlice(_imm, 20, 20);
+    slicedImm += string_utils::reverseSlice(_imm, 10, 1);
+    slicedImm += string_utils::reverseSlice(_imm, 11, 11);
+    slicedImm += string_utils::reverseSlice(_imm, 19, 12);
+    output = slicedImm + output;
+    return output;
+}
+
+std::string Parser::parseJTypeInst(std::string opName, unsigned int rd,
+                                   int imm) {
+    std::string output = "";
+    if (opName == "jal") {
+        output = collectBinaryJType("1101111", rd, imm);
+    }
+
+    std::cout << "J Type Binary output: ";
+    std::cout << output;
+    return output;
+}
+
+void Parser::computeJTypeInst(std::string &tmp_line, unsigned int lineNo) {
+    std::string opName = parseOperation(tmp_line);
+    parseWhitespace(tmp_line);
+    unsigned int rd = parseRegister(tmp_line);
+    parseComma(tmp_line);
+    int offset;
+    try {
+        offset = parseImm(tmp_line, 12);
+    } catch (const std::exception) {
+        std::string labelName = parseLabelName(tmp_line);
+        if (!labelLocations[labelName]) {
+            throw std::runtime_error("invalid label/imm");
+        }
+        offset = (labelLocations[labelName] - lineNo) * 4;
+    }
+
+    try {
+        parseOpenParen(tmp_line);
+        parseRegister(tmp_line);
+        parseCloseParen(tmp_line);
+    } catch (const std::exception) {
+        // do nothing
+    }
+
+    if (!tmp_line.empty()) {
+        throw std::runtime_error("expect end of line");
+    }
+
+    std::string outputBinary = parseJTypeInst(opName, rd, offset);
 }
 
 void Parser::parse() {
@@ -422,6 +541,10 @@ void Parser::parse() {
                 unsigned int rs1 = parseRegister(tmp_line);
                 parseCloseParen(tmp_line);
 
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expect end of line");
+                }
+
                 std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
@@ -469,203 +592,25 @@ void Parser::parse() {
                 unsigned int rs1 = parseRegister(tmp_line);
                 parseCloseParen(tmp_line);
 
-                // printInst(inst);
+                std::string outputBinary =
+                    parseSTypeInst(opName, rs1, rs2, imm);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
-        } else if (op == "beq") {
+        } else if (op == "beq" || op == "bne" || op == "blt" || op == "bge" ||
+                   op == "bltu" || op == "bgeu") {
             try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
+                computeBTypeInst(tmp_line, lineNo);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
                 break;
             }
-        } else if (op == "bne") {
+        } else if (op == "auipc" || op == "lui") {
             try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "bge") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "bgeu") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "blt") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "bltu") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rs1 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                unsigned int rs2 = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception &_) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "auipc") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                int imm = parseImm(tmp_line, 100);
-
-                // printInst(inst);
-            } catch (const std::exception &e) {
-                std::cout << this->inputFile[i] << '\n';
-                std::cerr << e.what() << '\n';
-                break;
-            }
-        } else if (op == "lui") {
-            try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                int imm = parseImm(tmp_line, 100);
-
-                // printInst(inst);
+                computeUTypeInst(tmp_line);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';
@@ -673,33 +618,7 @@ void Parser::parse() {
             }
         } else if (op == "jal") {
             try {
-                std::string opName = parseOperation(tmp_line);
-                parseWhitespace(tmp_line);
-                unsigned int rd = parseRegister(tmp_line);
-                parseComma(tmp_line);
-                try {
-                    int offset = parseImm(tmp_line, 12);
-                } catch (const std::exception) {
-                    std::string labelName = parseLabelName(tmp_line);
-                    if (!labelLocations[labelName]) {
-                        throw std::runtime_error("invalid label name");
-                    }
-                    int offset = (labelLocations[labelName] - lineNo) * 4;
-                }
-
-                try {
-                    parseOpenParen(tmp_line);
-                    parseRegister(tmp_line);
-                    parseCloseParen(tmp_line);
-                } catch (const std::exception) {
-                    // do nothing
-                }
-
-                if (!tmp_line.empty()) {
-                    throw std::runtime_error("expect end of line");
-                }
-
-                // printInst(inst);
+                computeJTypeInst(tmp_line, lineNo);
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 std::cerr << e.what() << '\n';

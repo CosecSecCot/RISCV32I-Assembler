@@ -33,6 +33,11 @@ public:
                                unsigned int rs2, int imm);
     std::string parseBTypeInst(std::string opName, unsigned int rs1,
                                unsigned int rs2, int offset);
+    void computeBTypeInst(std::string &tmp_line, unsigned int lineNo);
+    std::string parseUTypeInst(std::string opName, unsigned int rd, int imm);
+    void computeUTypeInst(std::string &tmp_line);
+    std::string parseJTypeInst(std::string opName, unsigned int rd, int imm);
+    void computeJTypeInst(std::string &tmp_line, unsigned int lineNo);
 };
 
 #endif
