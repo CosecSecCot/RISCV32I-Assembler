@@ -32,7 +32,9 @@ int main(int argc, char **argv) {
         outputFileName = "out.txt";
     }
     std::ofstream outputFile(outputFileName);
-    outputFile << parser.outputFileContent;
+    for (auto line : parser.outputFileContent) {
+        outputFile << line;
+    }
 
     std::cout << "output is written to " << outputFileName << '\n';
     outputFile.close();

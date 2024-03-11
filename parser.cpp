@@ -3,6 +3,7 @@
 #include <iostream>
 
 Parser::Parser(std::ifstream &inputFileStream) {
+    this->numberOfHalts = 0;
     this->inputFile.clear();
 
     while (!inputFileStream.eof()) {
@@ -242,7 +243,7 @@ void Parser::computeRTypeInst(std::string &tmp_line) {
     }
 
     std::string outputBinary = parseRTypeInst(opName, rd, rs1, rs2);
-    this->outputFileContent += (outputBinary + '\n');
+    this->outputFileContent.push_back(outputBinary + '\n');
 }
 
 std::string collectBinaryIType(std::string opcode, unsigned int rd,
@@ -291,7 +292,7 @@ void Parser::computeITypeInst(std::string &tmp_line) {
     }
 
     std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
-    this->outputFileContent += (outputBinary + '\n');
+    this->outputFileContent.push_back(outputBinary + '\n');
 }
 
 std::string collectBinarySType(std::string opcode, int imm, std::string funct3,
@@ -389,7 +390,7 @@ void Parser::computeBTypeInst(std::string &tmp_line, unsigned int lineNo) {
     }
 
     std::string outputBinary = parseBTypeInst(opName, rs1, rs2, offset);
-    this->outputFileContent += (outputBinary + '\n');
+    this->outputFileContent.push_back(outputBinary + '\n');
 }
 
 std::string collectBinaryUType(std::string opcode, unsigned int rd, int imm) {
@@ -427,7 +428,7 @@ void Parser::computeUTypeInst(std::string &tmp_line) {
     }
 
     std::string outputBinary = parseUTypeInst(opName, rd, imm);
-    this->outputFileContent += (outputBinary + '\n');
+    this->outputFileContent.push_back(outputBinary + '\n');
 }
 
 std::string collectBinaryJType(std::string opcode, unsigned int rd, int imm) {
@@ -484,7 +485,7 @@ void Parser::computeJTypeInst(std::string &tmp_line, unsigned int lineNo) {
     }
 
     std::string outputBinary = parseJTypeInst(opName, rd, offset);
-    this->outputFileContent += (outputBinary + '\n');
+    this->outputFileContent.push_back(outputBinary + '\n');
 }
 
 void Parser::parse() {
@@ -544,7 +545,7 @@ void Parser::parse() {
                 }
 
                 std::string outputBinary = parseITypeInst(opName, rd, rs1, imm);
-                this->outputFileContent += (outputBinary + '\n');
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
@@ -576,7 +577,7 @@ void Parser::parse() {
 
                 std::string outputBinary =
                     parseITypeInst(opName, rd, rs1, offset);
-                this->outputFileContent += (outputBinary + '\n');
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
@@ -595,7 +596,7 @@ void Parser::parse() {
 
                 std::string outputBinary =
                     parseSTypeInst(opName, rs1, rs2, imm);
-                this->outputFileContent += (outputBinary + '\n');
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
@@ -682,5 +683,6 @@ void Parser::parse() {
         }
         // std::cout << '\n';
     }
+
     // std::cout << this->outputFileContent;
 }
