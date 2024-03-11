@@ -682,6 +682,7 @@ void Parser::parse() {
                 std::string outputBinary = std::string("00000000") + "00000" +
                                            "00000" + "010" + "00000" +
                                            "1000101";
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
@@ -695,7 +696,16 @@ void Parser::parse() {
                 parseComma(tmp_line);
                 unsigned int rs1 = parseRegister(tmp_line);
 
-                // printInst(inst);
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expected end of line, found: " +
+                                             tmp_line);
+                }
+
+                std::string outputBinary =
+                    std::string("00000000") + "00000" +
+                    std::bitset<5>(rs1).to_string() + "011" +
+                    std::bitset<5>(rd).to_string() + "1000101";
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
@@ -709,7 +719,7 @@ void Parser::parse() {
     }
     // std::cout << this->outputFileContent;
     for (auto line : this->outputFileContent) {
-        if (line == "00000000000000000000000001100011\n") {
+        if (line == "00000000000000000000000001100011\n" || line == "00000000000000000010000000000000\n") {
             this->numberOfHalts++;
         }
     }
