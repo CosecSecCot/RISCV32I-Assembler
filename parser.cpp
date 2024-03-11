@@ -684,7 +684,7 @@ void Parser::parse() {
         // std::cout << '\n';
     }
     // std::cout << this->outputFileContent;
-        for (auto line : this->outputFileContent) {
+    for (auto line : this->outputFileContent) {
         if (line == "00000000000000000000000001100011\n") {
             this->numberOfHalts++;
         }
@@ -693,5 +693,4 @@ void Parser::parse() {
     if (this->numberOfHalts < 1) {
         throw std::runtime_error("atleast one halt operation is requred");
     }
-
 }
