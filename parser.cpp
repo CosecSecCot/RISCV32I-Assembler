@@ -656,7 +656,15 @@ void Parser::parse() {
             try {
                 std::string opName = parseOperation(tmp_line);
 
-                // printInst(inst);
+                if (!tmp_line.empty()) {
+                    throw std::runtime_error("expected end of line, found: " +
+                                             tmp_line);
+                }
+
+                std::string outputBinary = std::string("00000000") + "00000" +
+                                           "00000" + "001" + "00000" +
+                                           "1000101";
+                this->outputFileContent.push_back(outputBinary + '\n');
             } catch (const std::exception &e) {
                 std::cout << this->inputFile[i] << '\n';
                 throw std::runtime_error(e.what());
