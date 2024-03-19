@@ -5,6 +5,7 @@
 .vscode
 .cache/*
 Build/*
+build/*
 Debug/*
 compile_commands.json
 

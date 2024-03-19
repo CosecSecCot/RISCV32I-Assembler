@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "string_utils.h"
+#include <cmath>
 #include <iostream>
 
 Parser::Parser(std::ifstream &inputFileStream) {
