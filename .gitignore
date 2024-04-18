@@ -1,6 +1,5 @@
 *.out
 *.exe
-*.txt
 
 .vscode
 .cache/*
